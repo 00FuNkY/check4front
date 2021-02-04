@@ -61,7 +61,17 @@ function Auth() {
             />
           </Col>
         </FormGroup>
-
+        {error && (
+          <div>
+            <p
+              style={{
+                color: 'red',
+              }}
+            >
+              {error.message}
+            </p>
+          </div>
+        )}
         <Button type="button" onClick={sendData}>
           Se Connecter
         </Button>
