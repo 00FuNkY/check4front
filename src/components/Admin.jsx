@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   Button,
   Col,
@@ -11,12 +12,14 @@ import {
 } from 'reactstrap';
 
 function Admin() {
+  const history = useHistory();
   const [form, setForm] = useState({});
   const [form2, setForm2] = useState({});
   // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(null);
   const [Properties, setProperties] = useState(null);
   const [RoyalFamily, setRoyalFamily] = useState(null);
+  const [letoto, setLeToto] = useState({});
 
   console.log(Properties);
   console.log(RoyalFamily);
@@ -27,17 +30,33 @@ function Admin() {
       .then((res) => setRoyalFamily(res.data));
   }, []);
 
+  useEffect(() => {
+    if (localStorage.getItem('TOKEN')) {
+      setLeToto({ ...letoto, token: localStorage.getItem('TOKEN') });
+    } else {
+      history.push('/Connexion');
+    }
+  }, []);
+
+  console.log(letoto);
+
   const postRoyalFamily = async (e) => {
     e.preventDefault();
     try {
       setError(null);
       // eslint-disable-next-line no-unused-vars
-      const { data } = await axios.post(
+      const data = await axios.post(
         'http://localhost:3090/api/v1/royalfamily',
         {
-          Name: form2.Name,
-          RoyalTitle: form2.RoyalTitle,
-          Picture: form2.Picture,
+          headers: {
+            authorization: `Bearer ${letoto.token}`,
+          },
+
+          body: {
+            Name: form2.Name,
+            RoyalTitle: form2.RoyalTitle,
+            Picture: form2.Picture,
+          },
         }
       );
     } catch (err) {
@@ -80,14 +99,20 @@ function Admin() {
       const { data } = await axios.post(
         'http://localhost:3090/api/v1/properties',
         {
-          Title: form.Title,
-          Price: form.Price,
-          Lieux: form.Lieux,
-          RoyalFamilyId: form.RoyalFamilyId,
-          Description: form.Description,
-          Picture1: form.Picture1,
-          Picture2: form.Picture2,
-          Picture3: form.Picture3,
+          headers: {
+            authorization: `Bearer ${letoto.token}`,
+          },
+
+          body: {
+            Title: form.Title,
+            Price: form.Price,
+            Lieux: form.Lieux,
+            RoyalFamilyId: form.RoyalFamilyId,
+            Description: form.Description,
+            Picture1: form.Picture1,
+            Picture2: form.Picture2,
+            Picture3: form.Picture3,
+          },
         }
       );
     } catch (err) {
